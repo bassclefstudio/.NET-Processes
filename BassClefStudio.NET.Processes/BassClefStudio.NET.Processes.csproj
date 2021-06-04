@@ -3,6 +3,11 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Authors>BassClefStudio</Authors>
+    <PackageProjectUrl>https://github.com/bassclefstudio/.NET-Processes</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/bassclefstudio/.NET-Processes.git</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Description>Provides helper classes for dealing with common scenarios involving the Process class, including shell and command-line execution and managing standard I/O.</Description>
   </PropertyGroup>
 
   <ItemGroup>
