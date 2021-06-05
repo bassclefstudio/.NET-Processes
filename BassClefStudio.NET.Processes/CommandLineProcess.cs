@@ -10,7 +10,7 @@ namespace BassClefStudio.NET.Processes
     /// <summary>
     /// Manages calls to a single command-line application and provides methods for dealing with input and output in a more streamlined manner.
     /// </summary>
-    public class CommandLineProcess : IDisposable
+    public class CommandLineProcess : IManagedProcess
     {
         /// <inheritdoc/>
         public Process MyProcess { get; private set; }
@@ -45,10 +45,10 @@ namespace BassClefStudio.NET.Processes
         private TaskCompletionSource<int> ExitedSource { get; set; }
 
         /// <inheritdoc/>
-        public async Task<int> CallCommandAsync(string command)
+        public async Task<int> CallAsync(string arguments)
         {
             MyProcess.Refresh();
-            MyProcess.StartInfo.Arguments = command;
+            MyProcess.StartInfo.Arguments = arguments;
             ExitedSource = new TaskCompletionSource<int>();
             MyProcess.Start();
             return await ExitedSource.Task;
