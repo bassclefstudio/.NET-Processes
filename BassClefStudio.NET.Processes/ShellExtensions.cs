@@ -21,10 +21,10 @@ namespace BassClefStudio.NET.Processes
         /// </summary>
         /// <param name="command">The <see cref="string"/> contents of the command to execute.</param>
         /// <param name="bashLocation">Specifies an alternative place to look for the Bash executable besides <see cref="DefaultBashLocation"/>.</param>
-        /// <returns>A collection of <see cref="ProcessOutput"/> lines returned from the standard output streams.</returns>
-        public static async Task<ProcessOutput[]> BashAsync(this string command, string bashLocation = DefaultBashLocation)
+        /// <returns>A collection of <see cref="string"/> lines returned from the standard output streams.</returns>
+        public static async Task<string[]> BashAsync(this string command, string bashLocation = DefaultBashLocation)
         {
-            List<ProcessOutput> outputs = new List<ProcessOutput>();
+            List<string> outputs = new List<string>();
             using(CommandLineProcess cmd = new CommandLineProcess(bashLocation))
             {
                 cmd.OutputStream
@@ -46,10 +46,10 @@ namespace BassClefStudio.NET.Processes
         /// </summary>
         /// <param name="command">The <see cref="string"/> contents of the command to execute.</param>
         /// <param name="psLocation">Specifies an alternative place to look for the Powershell executable besides <see cref="DefaultPSLocation"/>.</param>
-        /// <returns>A collection of <see cref="ProcessOutput"/> lines returned from the standard output streams.</returns>
-        public static async Task<ProcessOutput[]> PowershellAsync(this string command, string psLocation = DefaultPSLocation)
+        /// <returns>A collection of <see cref="string"/> lines returned from the standard output streams.</returns>
+        public static async Task<string[]> PowershellAsync(this string command, string psLocation = DefaultPSLocation)
         {
-            List<ProcessOutput> outputs = new List<ProcessOutput>();
+            List<string> outputs = new List<string>();
             using (CommandLineProcess cmd = new CommandLineProcess(psLocation))
             {
                 cmd.OutputStream
@@ -71,10 +71,10 @@ namespace BassClefStudio.NET.Processes
         /// </summary>
         /// <param name="command">The <see cref="string"/> contents of the command to execute.</param>
         /// <param name="cmdLocation">Specifies an alternative place to look for the cmd.exe executable besides <see cref="DefaultCmdLocation"/>.</param>
-        /// <returns>A collection of <see cref="ProcessOutput"/> lines returned from the standard output streams.</returns>
-        public static async Task<ProcessOutput[]> CmdAsync(this string command, string cmdLocation = DefaultCmdLocation)
+        /// <returns>A collection of <see cref="string"/> lines returned from the standard output streams.</returns>
+        public static async Task<string[]> CmdAsync(this string command, string cmdLocation = DefaultCmdLocation)
         {
-            List<ProcessOutput> outputs = new List<ProcessOutput>();
+            List<string> outputs = new List<string>();
             using (CommandLineProcess cmd = new CommandLineProcess(cmdLocation))
             {
                 cmd.OutputStream

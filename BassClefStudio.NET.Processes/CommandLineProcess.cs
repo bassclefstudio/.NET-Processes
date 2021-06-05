@@ -15,9 +15,9 @@ namespace BassClefStudio.NET.Processes
         /// <inheritdoc/>
         public Process MyProcess { get; private set; }
 
-        private SourceStream<ProcessOutput> outputStream;
+        private SourceStream<string> outputStream;
         /// <inheritdoc/>
-        public IStream<ProcessOutput> OutputStream => outputStream;
+        public IStream<string> OutputStream => outputStream;
 
         /// <summary>
         /// Creates a new <see cref="CommandLineProcess"/> for the specified <paramref name="programName"/>.
@@ -27,7 +27,7 @@ namespace BassClefStudio.NET.Processes
         public CommandLineProcess(string programName, bool shellExecute = false)
         {
             MyProcess = new Process();
-            outputStream = new SourceStream<ProcessOutput>();
+            outputStream = new SourceStream<string>();
 
             // Requests execution of the provided program without the shell.
             MyProcess.StartInfo.UseShellExecute = shellExecute;
@@ -36,24 +36,26 @@ namespace BassClefStudio.NET.Processes
             MyProcess.StartInfo.RedirectStandardInput = true;
             MyProcess.StartInfo.RedirectStandardOutput = true;
             MyProcess.StartInfo.WorkingDirectory = Environment.CurrentDirectory;
-
-            MyProcess.Exited += ProcessExited;
-            MyProcess.ErrorDataReceived += HandleError;
-            MyProcess.OutputDataReceived += HandleStandardOutput;
         }
 
         #region Methods
-
-        private TaskCompletionSource<int> ExitedSource { get; set; }
 
         /// <inheritdoc/>
         public async Task<int> CallAsync(string arguments)
         {
             MyProcess.Refresh();
             MyProcess.StartInfo.Arguments = arguments;
-            ExitedSource = new TaskCompletionSource<int>();
             MyProcess.Start();
-            return await ExitedSource.Task;
+            while (!MyProcess.StandardOutput.EndOfStream)
+            {
+                string o = await MyProcess.StandardOutput.ReadLineAsync();
+                outputStream.EmitValue(new StreamValue<string>(o));
+            }
+            await Task.Run(() =>
+            {
+                MyProcess.WaitForExit();
+            });
+            return MyProcess.ExitCode;
         }
 
         /// <inheritdoc/>
@@ -71,37 +73,12 @@ namespace BassClefStudio.NET.Processes
         }
 
         #endregion
-        #region ProcessEvents
-
-        private void ProcessExited(object sender, EventArgs e)
-        {
-            if (ExitedSource != null)
-            {
-                MyProcess.WaitForExit();
-                ExitedSource.SetResult(MyProcess.ExitCode);
-            }
-        }
-
-        private void HandleStandardOutput(object sender, DataReceivedEventArgs e)
-        {
-            outputStream.EmitValue(new ProcessOutput(e.Data, OutputType.Standard));
-        }
-
-        private void HandleError(object sender, DataReceivedEventArgs e)
-        {
-            outputStream.EmitValue(new ProcessOutput(e.Data, OutputType.Error));
-        }
-
-        #endregion
 
         /// <inheritdoc/>
         public void Dispose()
         {
             if (MyProcess != null)
             {
-                MyProcess.Exited -= ProcessExited;
-                MyProcess.ErrorDataReceived -= HandleError;
-                MyProcess.OutputDataReceived -= HandleStandardOutput;
                 MyProcess.Dispose();
                 MyProcess = null;
             }

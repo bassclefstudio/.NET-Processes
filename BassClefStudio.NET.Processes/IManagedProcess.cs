@@ -37,8 +37,8 @@ namespace BassClefStudio.NET.Processes
         Task WriteAsync(string input);
 
         /// <summary>
-        /// An <see cref="IStream{T}"/> which emits whenever output is recived from the standard I/O.
+        /// An <see cref="IStream{T}"/> which emits whenever output is received from the standard output.
         /// </summary>
-        IStream<ProcessOutput> OutputStream { get; }
+        IStream<string> OutputStream { get; }
     }
 }
