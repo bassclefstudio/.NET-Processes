@@ -18,11 +18,11 @@ namespace BassClefStudio.NET.Processes
         Process MyProcess { get; }
 
         /// <summary>
-        /// Calls the given command asynchronously and monitors standard I/O.
+        /// Calls the process asynchronously and monitors standard I/O.
         /// </summary>
-        /// <param name="command">The shell script to execute.</param>
-        /// <returns>The exit code returned by the exiting process.</returns>
-        Task<int> CallCommandAsync(string command);
+        /// <param name="arguments">The parameters provided to the process when it is launched.</param>
+        /// <returns>The exit code returned by the process.</returns>
+        Task<int> CallAsync(string arguments);
 
         /// <summary>
         /// Writes the given line to the attached <see cref="Process.StandardInput"/>.

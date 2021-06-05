@@ -43,7 +43,7 @@ namespace BassClefStudio.NET.Processes
         private TaskCompletionSource<int> ExitedSource { get; set; }
 
         /// <inheritdoc/>
-        public async Task<int> CallCommandAsync(string command)
+        public async Task<int> CallAsync(string command)
         {
             MyProcess.Refresh();
             MyProcess.StartInfo.Arguments = command;
