@@ -23,15 +23,17 @@ namespace BassClefStudio.NET.Processes
         /// Creates a new <see cref="CommandLineProcess"/> for the specified <paramref name="programName"/>.
         /// </summary>
         /// <param name="programName">The path to the program being executed, or the name if it is included in the PATH.</param>
-        public CommandLineProcess(string programName)
+        /// <param name="shellExecute">A <see cref="bool"/> indicating whether the process should be started from the default shell.</param>
+        public CommandLineProcess(string programName, bool shellExecute = false)
         {
             MyProcess = new Process();
             outputStream = new SourceStream<ProcessOutput>();
 
-            // Requests execution of the provided program.
-            MyProcess.StartInfo.UseShellExecute = false;
+            // Requests execution of the provided program without the shell.
+            MyProcess.StartInfo.UseShellExecute = shellExecute;
             MyProcess.StartInfo.FileName = programName;
-            MyProcess.StartInfo.RedirectStandardInput = false;
+
+            MyProcess.StartInfo.RedirectStandardInput = true;
             MyProcess.StartInfo.RedirectStandardOutput = true;
             MyProcess.StartInfo.WorkingDirectory = Environment.CurrentDirectory;
 
