@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,14 +11,15 @@ namespace BassClefStudio.NET.Processes
     /// <summary>
     /// Manages calls to a single command-line application and provides methods for dealing with input and output in a more streamlined manner.
     /// </summary>
-    public class CommandLineProcess : IManagedProcess
+    public class CommandLineProcess : IProcess
     {
-        /// <inheritdoc/>
+        /// <summary>
+        /// The internally-managed <see cref="Process"/> used to run command-line applications.
+        /// </summary>
         public Process MyProcess { get; private set; }
 
-        private SourceStream<string> outputStream;
         /// <inheritdoc/>
-        public IStream<string> OutputStream => outputStream;
+        public StreamReader StandardOutput => MyProcess.StandardOutput;
 
         /// <summary>
         /// Creates a new <see cref="CommandLineProcess"/> for the specified <paramref name="programName"/>.
@@ -27,7 +29,6 @@ namespace BassClefStudio.NET.Processes
         public CommandLineProcess(string programName, bool shellExecute = false)
         {
             MyProcess = new Process();
-            outputStream = new SourceStream<string>();
 
             // Requests execution of the provided program without the shell.
             MyProcess.StartInfo.UseShellExecute = shellExecute;
@@ -41,16 +42,16 @@ namespace BassClefStudio.NET.Processes
         #region Methods
 
         /// <inheritdoc/>
-        public async Task<int> CallAsync(string arguments)
+        public void Start(string arguments)
         {
             MyProcess.Refresh();
             MyProcess.StartInfo.Arguments = arguments;
             MyProcess.Start();
-            while (!MyProcess.StandardOutput.EndOfStream)
-            {
-                string o = await MyProcess.StandardOutput.ReadLineAsync();
-                outputStream.EmitValue(new StreamValue<string>(o));
-            }
+        }
+
+        /// <inheritdoc/>
+        public async Task<int> WaitCompletionAsync()
+        {
             await Task.Run(() =>
             {
                 MyProcess.WaitForExit();

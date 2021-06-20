@@ -8,11 +8,12 @@
     <RepositoryUrl>https://github.com/bassclefstudio/.NET-Processes.git</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Description>Provides helper classes for dealing with common scenarios involving the Process class, including shell and command-line execution and managing standard I/O.</Description>
-    <Version>1.2.0</Version>
+    <Version>2.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="BassClefStudio.NET.Core" Version="2.0.3" />
+    <PackageReference Include="Pidgin" Version="2.5.0" />
   </ItemGroup>
 
 </Project>
