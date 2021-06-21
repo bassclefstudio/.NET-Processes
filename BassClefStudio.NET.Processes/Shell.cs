@@ -11,9 +11,9 @@ using System.Linq;
 namespace BassClefStudio.NET.Processes
 {
     /// <summary>
-    /// Provides extension methods for using <see cref="CommandLineProcess"/> to execute commands in the shell.
+    /// Provides extension methods and resources for using <see cref="IProcess"/>es to execute shell commands.
     /// </summary>
-    public static class ShellExtensions
+    public static class Shell
     {
         #region ShellLocations
 
@@ -62,6 +62,19 @@ namespace BassClefStudio.NET.Processes
             = Try(Not(EndOfLine).Then(Any)).AtLeastOnceString().SeparatedAndOptionallyTerminated(EndOfLine).Before(End);
 
         /// <summary>
+        /// Starts a new <see cref="IProcess"/> for the given <paramref name="path"/> program.
+        /// </summary>
+        /// <param name="arguments">The command arguments to pass to the shell.</param>
+        /// <param name="path">The path to the shell application.</param>
+        /// <returns>The initialized <see cref="IProcess"/> process.</returns>
+        public static IProcess StartProcess(this string path, string arguments)
+        {
+            IProcess process = new CommandLineProcess(path);
+            process.Start(arguments);
+            return process;
+        }
+
+        /// <summary>
         /// Runs a command on the given <paramref name="path"/> shell program and returns the resulting output.
         /// </summary>
         /// <param name="arguments">The command arguments to pass to the shell.</param>
@@ -69,9 +82,8 @@ namespace BassClefStudio.NET.Processes
         /// <returns>An array of <see cref="string"/> lines from the standard output.</returns>
         public static async Task<string[]> RunCommandAsync(this string arguments, string path)
         {
-            using (IProcess process = new CommandLineProcess(path))
+            using (IProcess process = path.StartProcess(arguments))
             {
-                process.Start(arguments);
                 var lines = await process.ParseOutputAsync(ParseLines);
                 await process.WaitCompletionAsync();
                 return lines.ToArray();
@@ -79,32 +91,60 @@ namespace BassClefStudio.NET.Processes
         }
 
         /// <summary>
+        /// Starts a new PowerShell (Windows-only) <see cref="IProcess"/>.
+        /// </summary>
+        /// <param name="arguments">The command arguments to pass to the shell.</param>
+        /// <returns>The initialized <see cref="IProcess"/> for the given command.</returns>
+        public static IProcess StartPowerShell(this string arguments) => StartProcess(DefaultPSLocation, arguments);
+
+        /// <summary>
         /// Runs a command in PowerShell (Windows-only) and returns the resulting output.
         /// </summary>
         /// <param name="arguments">The command arguments to pass to the shell.</param>
         /// <returns>An array of <see cref="string"/> lines from the standard output.</returns>
-        public static async Task<string[]> PowerShellAsync(this string arguments) => await RunCommandAsync(arguments, DefaultPSLocation);
+        public static async Task<string[]> RunPowerShellAsync(this string arguments) => await RunCommandAsync(arguments, DefaultPSLocation);
+
+        /// <summary>
+        /// Starts a new PowerShell Core <see cref="IProcess"/>.
+        /// </summary>
+        /// <param name="arguments">The command arguments to pass to the shell.</param>
+        /// <returns>The initialized <see cref="IProcess"/> for the given command.</returns>
+        public static IProcess StartPowerShellCore(this string arguments) => StartProcess(DefaultPSCoreLocation, arguments);
 
         /// <summary>
         /// Runs a command in PowerShell Core and returns the resulting output.
         /// </summary>
         /// <param name="arguments">The command arguments to pass to the shell.</param>
         /// <returns>An array of <see cref="string"/> lines from the standard output.</returns>
-        public static async Task<string[]> PowerShellCoreAsync(this string arguments) => await RunCommandAsync($"-c {arguments}", DefaultPSCoreLocation);
+        public static async Task<string[]> RunPowerShellCoreAsync(this string arguments) => await RunCommandAsync($"-c {arguments}", DefaultPSCoreLocation);
+
+        /// <summary>
+        /// Starts a new Bash <see cref="IProcess"/>.
+        /// </summary>
+        /// <param name="arguments">The command arguments to pass to the shell.</param>
+        /// <returns>The initialized <see cref="IProcess"/> for the given command.</returns>
+        public static IProcess StartBash(this string arguments) => StartProcess(DefaultBashLocation, arguments);
 
         /// <summary>
         /// Runs a command in Bash and returns the resulting output.
         /// </summary>
         /// <param name="arguments">The command arguments to pass to the shell.</param>
         /// <returns>An array of <see cref="string"/> lines from the standard output.</returns>
-        public static async Task<string[]> BashAsync(this string arguments) => await RunCommandAsync(arguments, DefaultBashLocation);
+        public static async Task<string[]> RunBashAsync(this string arguments) => await RunCommandAsync(arguments, DefaultBashLocation);
+
+        /// <summary>
+        /// Starts a new CMD.exe <see cref="IProcess"/>.
+        /// </summary>
+        /// <param name="arguments">The command arguments to pass to the shell.</param>
+        /// <returns>The initialized <see cref="IProcess"/> for the given command.</returns>
+        public static IProcess StartCmd(this string arguments) => StartProcess(DefaultCmdLocation, arguments);
 
         /// <summary>
         /// Runs a command in CMD.exe and returns the resulting output.
         /// </summary>
         /// <param name="arguments">The command arguments to pass to the shell.</param>
         /// <returns>An array of <see cref="string"/> lines from the standard output.</returns>
-        public static async Task<string[]> CmdAsync(this string arguments) => await RunCommandAsync(arguments, DefaultCmdLocation);
+        public static async Task<string[]> RunCmdAsync(this string arguments) => await RunCommandAsync(arguments, DefaultCmdLocation);
 
         #endregion
     }
