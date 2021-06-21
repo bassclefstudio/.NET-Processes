@@ -31,7 +31,7 @@ namespace BassClefStudio.NET.Processes.Tests
             try
             {
                 Console.WriteLine("Running in Bash:");
-                output = await $"echo \"{message}\"".BashAsync();
+                output = await $"printf \"{message}\"".BashAsync();
                 Console.WriteLine("Bash call complete.");
             }
             catch (Exception ex)
