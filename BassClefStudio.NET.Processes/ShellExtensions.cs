@@ -97,7 +97,7 @@ namespace BassClefStudio.NET.Processes
         /// </summary>
         /// <param name="arguments">The command arguments to pass to the shell.</param>
         /// <returns>An array of <see cref="string"/> lines from the standard output.</returns>
-        public static async Task<string[]> BashAsync(this string arguments) => await RunCommandAsync(arguments, DefaultBashLocation);
+        public static async Task<string[]> BashAsync(this string arguments) => await RunCommandAsync($"-c {arguments}", DefaultBashLocation);
 
         /// <summary>
         /// Runs a command in CMD.exe and returns the resulting output.
