@@ -18,7 +18,7 @@ namespace BassClefStudio.NET.Processes.Tests
             try
             {
                 Console.WriteLine("Running in Powershell:");
-                output = await $"Write-Host \"{message}\"".PowerShellCoreAsync();
+                output = await $"Write-Host \"{message}\"".RunPowerShellCoreAsync();
                 Console.WriteLine("Powershell call complete.");
 
                 Assert.AreEqual(1, output.Length, "Output is unexpected number of lines.");
